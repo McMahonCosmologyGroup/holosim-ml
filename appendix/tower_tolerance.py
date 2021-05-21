@@ -58,18 +58,6 @@ tele_geo = tele_geo_init(rx3[0], rx3[1], rx3[2], el[2], az[2])
 th = np.linspace(-np.pi / 2 - 0.28, -np.pi / 2 + 0.28, tele_geo.N_scan)
 ph = np.linspace(np.pi / 2 - 0.28, np.pi / 2 + 0.28, tele_geo.N_scan)
 
-rxmirror_C = af.ray_mirror_pts(rx3, tele_geo, th, ph)
-dat_C = afit.take_measurement(
-    np.zeros(77 * 5), np.zeros(77 * 5), 0, tele_geo, rxmirror_C
-)
-dat_C = np.loadtxt(dat_C)
-x_C, y_C, meas_C, ampl_C, geo = afit.analyze_holography(
-    dat_C, tele_geo, 0, 1, 0, shift_C
-)
-meas_C = np.where(
-    (abs(ampl_C) / np.max(abs(ampl_C))) >= 0.3, meas_C - np.mean(meas_C), 0
-)
-
 rx1_tri = np.array([rx_x_tri[0], 209.09, rx_z_tri[0]])
 tele_geo = tele_geo_init(rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0])
 rxmirror_A_tri = af.ray_mirror_pts(rx1_tri, tele_geo, th, ph)
@@ -118,27 +106,27 @@ meas_C_tri = np.where(
     0,
 )
 
+
 trinocular_model = pickle.load(open("../../ml-models/model_trinocular.sav", "rb"))
 
-initial3 = []
 
-final3 = []
-final3_m1 = []
-final3_m2 = []
+def test(coord):
 
+    tow = np.zeros(1)  # [m]
+    tow = np.append(tow, -np.linspace(1, 3, 6))
+    print(tow)
+    final = []
 
-def tol_test(val):
+    # Define adjuster offsets, as random distribution on the micron scale
+    adj_1 = np.random.randn(77 * 5) * 20  # [um]
+    adj_2 = np.random.randn(69 * 5) * 25  # [um]
 
-    tow_offset = np.linspace(0, 5, 11) * 1e-3  # [m]
+    for ii in range(len(tow)):
 
-    for ii in range(len(tow_offset)):
+        print(tow[ii])
         # Define FOV of receiver feed (RX) positions
         # (i.e. define direction of outgoing rays from the RX).
         tele_geo = tg.initialize_telescope_geometry()
-
-        # Define adjuster offsets, as random distribution on the micron scale
-        adj_1 = np.random.randn(77 * 5) * 20  # [um]
-        adj_2 = np.random.randn(69 * 5) * 25  # [um]
 
         # Define panels on M1 and M2. Here you can define the
         # magnitude of the adjuster offsets on each mirror:
@@ -149,20 +137,23 @@ def tol_test(val):
             1, adj_1, 1, 0
         )  # Panel Model on M1
 
-        rx1_tri = np.array([rx_x_tri[0], 209.09, rx_z_tri[0]])
-        tele_geo = tele_geo_init(
-            rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0]
-        )
+        if coord == "x":
+            tele_geo = tele_geo_init(
+                rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0]
+            )
+            tele_geo.x_tow += tow[ii]
 
-        if val == "x":
-            tele_geo.x_tow += tow_offset[ii]
-            print(tele_geo.x_tow)
-        elif val == "y":
-            tele_geo.y_tow += tow_offset[ii]
-            print(tele_geo.y_tow)
-        else:
-            tele_geo.z_tow += tow_offset[ii]
-            print(tele_geo.z_tow)
+        elif coord == "y":
+            tele_geo = tele_geo_init(
+                rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0]
+            )
+            tele_geo.y_tow += tow[ii]
+
+        elif coord == "z":
+            tele_geo = tele_geo_init(
+                rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0]
+            )
+            tele_geo.z_tow += tow[ii]
 
         rxmirror_A_tri = af.ray_mirror_pts(rx1_tri, tele_geo, th, ph)
         out1_tri = af.aperature_fields_from_panel_model(
@@ -174,18 +165,23 @@ def tol_test(val):
             abs(beam1_tri[2, :]) / np.max(abs(beam1_tri[2, :]))
         )  # far field beam amplitude [dB]
 
-        rx2_tri = np.array([rx_x_tri[1], 209.09, rx_z_tri[1]])
-        tele_geo = tele_geo_init(
-            rx2_tri[0], rx2_tri[1], rx2_tri[2], el_tri[1], az_tri[1]
-        )
-        if val == "x":
-            tele_geo.x_tow += tow_offset[ii]
-        elif val == "y":
-            tele_geo.y_tow += tow_offset[ii]
-        else:
-            tele_geo.z_tow += tow_offset[ii]
+        if coord == "x":
+            tele_geo = tele_geo_init(
+                rx2_tri[0], rx2_tri[1], rx2_tri[2], el_tri[1], az_tri[1]
+            )
+            tele_geo.x_tow += tow[ii]
+        elif coord == "y":
+            tele_geo = tele_geo_init(
+                rx2_tri[0], rx2_tri[1], rx2_tri[2], el_tri[1], az_tri[1]
+            )
+            tele_geo.y_tow += tow[ii]
+        elif coord == "z":
+            tele_geo = tele_geo_init(
+                rx2_tri[0], rx2_tri[1], rx2_tri[2], el_tri[1], az_tri[1]
+            )
+            tele_geo.z_tow += tow[ii]
 
-        rxmirror_B_tri = af.ray_mirror_pts(rx1_tri, tele_geo, th, ph)
+        rxmirror_B_tri = af.ray_mirror_pts(rx2_tri, tele_geo, th, ph)
         out2_tri = af.aperature_fields_from_panel_model(
             pan_mod_m1, pan_mod_m2, rx2_tri, tele_geo, th, ph, rxmirror_B_tri
         )  # apert. fields
@@ -195,18 +191,24 @@ def tol_test(val):
             abs(beam2_tri[2, :]) / np.max(abs(beam2_tri[2, :]))
         )  # far field beam amplitude [dB]
 
-        rx3_tri = np.array([rx_x_tri[2], 209.09, rx_z_tri[2]])
-        tele_geo = tele_geo_init(
-            rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
-        )
-        if val == "x":
-            tele_geo.x_tow += tow_offset[ii]
-        elif val == "y":
-            tele_geo.y_tow += tow_offset[ii]
-        else:
-            tele_geo.z_tow += tow_offset[ii]
+        if coord == "x":
+            tele_geo = tele_geo_init(
+                rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
+            )
+            tele_geo.x_tow += tow[ii]
+        elif coord == "y":
+            tele_geo = tele_geo_init(
+                rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
+            )
+            tele_geo.y_tow += tow[ii]
 
-        rxmirror_C_tri = af.ray_mirror_pts(rx1_tri, tele_geo, th, ph)
+        elif coord == "z":
+            tele_geo = tele_geo_init(
+                rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
+            )
+            tele_geo.z_tow += tow[ii]
+
+        rxmirror_C_tri = af.ray_mirror_pts(rx3_tri, tele_geo, th, ph)
         out3_tri = af.aperature_fields_from_panel_model(
             pan_mod_m1, pan_mod_m2, rx3_tri, tele_geo, th, ph, rxmirror_C_tri
         )  # apert. fields
@@ -217,7 +219,7 @@ def tol_test(val):
         )  # far field beam amplitude [dB]
 
         np.savetxt(
-            "/data/chesmore/sim_out/rx_" + str(rx1_tri) + "_holog_tri_tol.txt",
+            "/data/chesmore/sim_out/rx_" + str(rx1_tri) + "_holog_tri_rec.txt",
             np.c_[
                 np.real(beam1_tri[0, :]),
                 np.real(beam1_tri[1, :]),
@@ -226,7 +228,7 @@ def tol_test(val):
             ],
         )
         np.savetxt(
-            "/data/chesmore/sim_out/rx_" + str(rx2_tri) + "_holog_tri_tol.txt",
+            "/data/chesmore/sim_out/rx_" + str(rx2_tri) + "_holog_tri_rec.txt",
             np.c_[
                 np.real(beam2_tri[0, :]),
                 np.real(beam2_tri[1, :]),
@@ -235,7 +237,7 @@ def tol_test(val):
             ],
         )
         np.savetxt(
-            "/data/chesmore/sim_out/rx_" + str(rx3_tri) + "_holog_tri_tol.txt",
+            "/data/chesmore/sim_out/rx_" + str(rx3_tri) + "_holog_tri_rec.txt",
             np.c_[
                 np.real(beam3_tri[0, :]),
                 np.real(beam3_tri[1, :]),
@@ -244,36 +246,30 @@ def tol_test(val):
             ],
         )
 
-        tele_geo = tele_geo_init(
-            rx1_tri[0], rx1_tri[1], rx1_tri[2], el_tri[0], az_tri[0]
-        )
+        tele_geo = tele_geo_init(rx_x_tri[0], 209.09, rx_z_tri[0], el_tri[0], az_tri[0])
         dat_A = np.loadtxt(
-            "/data/chesmore/sim_out/rx_" + str(rx1_tri) + "_holog_tri_tol.txt"
+            "/data/chesmore/sim_out/rx_" + str(rx1_tri) + "_holog_tri_rec.txt"
         )
         x_A_tri, y_A_tri, phase_A_tri, ampl_A_tri, geo = afit.analyze_holography(
             dat_A, tele_geo, 0, 1, 0, shift_A_tri
         )
 
-        tele_geo = tele_geo_init(
-            rx2_tri[0], rx2_tri[1], rx2_tri[2], el_tri[1], az_tri[1]
-        )
+        tele_geo = tele_geo_init(rx_x_tri[1], 209.09, rx_z_tri[1], el_tri[1], az_tri[1])
         dat_B = np.loadtxt(
-            "/data/chesmore/sim_out/rx_" + str(rx2_tri) + "_holog_tri_tol.txt"
+            "/data/chesmore/sim_out/rx_" + str(rx2_tri) + "_holog_tri_rec.txt"
         )
         x_B_tri, y_B_tri, phase_B_tri, ampl_B_tri, geo = afit.analyze_holography(
             dat_B, tele_geo, 0, 1, 0, shift_B_tri
         )
 
-        tele_geo = tele_geo_init(
-            rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
-        )
+        tele_geo = tele_geo_init(rx_x_tri[2], 209.09, rx_z_tri[2], el_tri[2], az_tri[2])
         dat_C = np.loadtxt(
-            "/data/chesmore/sim_out/rx_" + str(rx3_tri) + "_holog_tri_tol.txt"
+            "/data/chesmore/sim_out/rx_" + str(rx3_tri) + "_holog_tri_rec.txt"
         )
         x_C_tri, y_C_tri, phase_C_tri, ampl_C_tri, geo = afit.analyze_holography(
             dat_C, tele_geo, 0, 1, 0, shift_C_tri
         )
-        print(np.shape(meas_C_tri))
+
         phase_A_tri = np.where(
             (abs(ampl_A_tri) / np.max(abs(ampl_A_tri))) >= 0.3,
             phase_A_tri - np.mean(phase_A_tri),
@@ -302,15 +298,11 @@ def tol_test(val):
 
         adjust = adj_fit3[0]
 
-        rx3_tri = np.array([rx_x_tri[2], 209.09, rx_z_tri[2]])
-        tele_geo = tele_geo_init(
-            rx3_tri[0], rx3_tri[1], rx3_tri[2], el_tri[2], az_tri[2]
-        )
+        tele_geo = tele_geo_init(rx_x_tri[2], 209.09, rx_z_tri[2], el_tri[2], az_tri[2])
         phase_tot_new_C3 = af.model_of_adj_offs(
             ((adjs_real - adjust) * 1e3), shift_C_tri, tele_geo, "total"
         )
-        print(np.shape(phase_tot_new_C3))
-        final3.append(
+        final.append(
             oa.rms(
                 x_C_tri,
                 y_C_tri,
@@ -324,6 +316,7 @@ def tol_test(val):
             )
         )
 
+        tow_offset_final = tow[ii]
         print(
             oa.rms(
                 x_C_tri,
@@ -338,6 +331,19 @@ def tol_test(val):
             )
         )
 
+        if ii == 0:
+            first = oa.rms(
+                x_C_tri,
+                y_C_tri,
+                1e6
+                * (
+                    phase_tot_new_C3
+                    - np.mean(phase_tot_new_C3)
+                    - (meas_C_tri - np.mean(meas_C_tri))
+                )
+                / tele_geo.k,
+            )
+
         if (
             oa.rms(
                 x_C_tri,
@@ -350,33 +356,17 @@ def tol_test(val):
                 )
                 / tele_geo.k,
             )
-            > 5
-        ):
+        ) > (first + 2.5):
+            print(tow_offset_final)
             break
 
-    return tow_offset, final3
+    return tow_offset_final
 
 
 values = []
-for ii in range(10):
-    value = tol_test("x")
+for ii in range(5):
+    value = test("z")
     values.append(value)
 
 print(values)
-print(np.average(values), np.std(values))
-
-values = []
-for ii in range(10):
-    value = tol_test("y")
-    values.append(value)
-
-print(values)
-print(np.average(values), np.std(values))
-
-values = []
-for ii in range(10):
-    value = tol_test("z")
-    values.append(value)
-
-print(values)
-print(np.average(values), np.std(values))
+print(np.mean(values), np.std(values))
