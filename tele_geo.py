@@ -16,7 +16,7 @@ class initialize_telescope_geometry:
     th2 = (-np.pi / 2) - th_2
     th_fwhp = 44 * np.pi / 180  # Full width half power [rad]
     N_scan = 100  # Pixels in 1D of grid
-    de_ang = 1 / 60 * np.pi / 180  # Far-field angle increment, arcsec = 1/60 degree
+    de_ang = 1 / 60 * np.pi / 180  # Far-field angle increment, arcmin = 1/60 degree
     lambda_ = (30.0 / 100.0) * 0.01  # Source wavelength [m]
     k = 2 * np.pi / lambda_  # Wavenumber [1/m]
 
@@ -38,7 +38,7 @@ class initialize_telescope_geometry:
     # Source position (tower) [m]
     x_tow = 0
     y_tow = -7.2
-    z_tow = 1e7
+    z_tow = 1e3
 
     # Azimuth and Elevation center [rad]
     az0 = 0
