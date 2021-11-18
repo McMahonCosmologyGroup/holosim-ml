@@ -17,6 +17,7 @@
         20 µm, 35 µm, and 50 µm.  The side-lobes around the central beam increase as RMS of panel errors increases.
     </figcaption>
 </figure>
+
 ## Dependencies
 * Python>=3.6
 * numpy, scipy, matplotlib, sklearn
