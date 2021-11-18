@@ -1,11 +1,11 @@
-import numpy as np
-import tele_geo as tg
 import ap_field as af
-import pan_mod as pm
-import optics_analyze as oa
-import far_field as ff
 import ap_fitting as afit
+import far_field as ff
+import numpy as np
+import optics_analyze as oa
+import pan_mod as pm
 import scipy
+import tele_geo as tg
 
 # Singular and Binocular positions
 rx_x = np.array([0, 0, 0])

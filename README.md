@@ -11,6 +11,22 @@
 $ git clone https://github.com/orgs/McMahonCosmologyGroup/holosim-ml
 ```
 
+The notebooks call two .csv files with the telescope mirrors' panel geometries.  In order to run the notebooks, change the path in ```pan_mod.py``` to the location of the .csv files (lines 264 and 270). 
+```
+# Primary mirror adjuster positions
+df_m1 = pd.read_csv(
+    "path/to/folder/pans-adjs/Mirror-M1-vertical-adjuster-points_r1-1.csv",
+    skiprows=2,
+    na_values=["<-- ", "--> ", "<--", "-->"],
+)
+# Secondary mirror adjuster positions
+df_m2 = pd.read_csv(
+    "path/to/folder/pans-adjs/Mirror-M2-vertical-adjuster-points_r1-1.csv",
+    skiprows=2,
+    na_values=["<-- ", "--> ", "<--", "-->"],
+)
+```
+
 ## Contributions
 If you have write access to this repository, please:
 * create a new branch

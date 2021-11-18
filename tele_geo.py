@@ -45,7 +45,7 @@ class initialize_telescope_geometry:
     el0 = np.arctan(-y_tow / z_tow)
 
     # Aperture plane [m]
-    x_ap = 3
+    x_ap = 3.0
     y_ap = -7.2
     z_ap = 4.0
 
@@ -150,6 +150,7 @@ def tele_into_m1(x, y, z):
     th1 = initialize_telescope_geometry.th_1
     z += 3600
     y += 7200
+
     x_temp = x
     y_temp = y * np.cos(-th1) - z * np.sin(-th1)
     z_temp = y * np.sin(-th1) + z * np.cos(-th1)
