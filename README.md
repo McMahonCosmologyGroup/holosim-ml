@@ -11,15 +11,14 @@
     </figcaption>
 </figure> -->
 
-<figure>
-    <img src="far_fields.png" alt="" width="80%" style="vertical-align : middle;display: table-cell;margin: 0 auto;text-align: center;">
-    <figcaption style="text-align: center;"><i>Far-field beam simulation of a 150 GHz source, with surface error root-mean-square of 0 µm, 
-        20 µm, 35 µm, and 50 µm.  The side-lobes around the central beam increase as RMS of panel errors increases.</i>
-    </figcaption>
-</figure>
-
 <p align="center">
-  <img src="far_fields.png" />
+    <figure>
+        <img src="far_fields.png" alt="" width="80%" style="vertical-align : middle;display: table-cell;margin: 0 auto;text-align: center;">
+        <figcaption style="text-align: center;"><i>Far-field beam simulation of a 150 GHz source, with surface error 
+            root-mean-square of 0 µm, 20 µm, 35 µm, and 50 µm.  
+            The side-lobes around the central beam increase as RMS of panel errors increases.</i>
+        </figcaption>
+    </figure>
 </p>
 
 ## Dependencies
