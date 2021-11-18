@@ -2,9 +2,14 @@
 # holosim-ml 📡
 ```holosim-ml``` is a library for beam simulation and analysis of radio holography data from complex optical systems. This code uses machine learning to efficiently determine the position of hundreds of mirror adjusters on multiple mirrors with few micron accuracy. We apply this approach to the example of the Simons Observatory 6 m telescope.
 
-<p align="center">
-  <img src="far_fields.png" width="550">
-</p>
+<figure>
+    <img src="far_fields.png" width="650" alt="centered image">
+    <figcaption style="padding-bottom:30px"> 
+        <i>Far-field beam simulation of a 150 GHz source, with surface error root-mean-square of 0 µm, 20 µm, 35 µm, and 50 µm.  
+            The side-lobes around the central beam increase as RMS of panel errors increases.
+        </i> 
+    </figcaption>
+</figure>
 
 ## Dependencies
 * Python>=3.6
