@@ -3,7 +3,7 @@
 ```holosim-ml``` is a library for beam simulation and analysis of radio holography data from complex optical systems. This code uses machine learning to efficiently determine the position of hundreds of mirror adjusters on multiple mirrors with few micron accuracy. We apply this approach to the example of the Simons Observatory 6 m telescope.
 
 <p align="center">
-  <img src="far_fields.png" width="350">
+  <img src="far_fields.png" width="550">
 </p>
 
 ## Dependencies
