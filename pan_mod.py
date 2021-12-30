@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+from DEFAULTS import PARENT_PATH
+
 n_per_m1 = [7, 9, 9, 9, 9, 9, 9, 9, 7]  # Num panels per row
 n_per_m2 = [5, 7, 9, 9, 9, 9, 9, 7, 5]  # Num panels per row
 
@@ -100,8 +102,13 @@ def panel_model_from_adjuster_offsets(mirror, err, num, save):
     # If you want to save the specific adjuster offsets
     # define the path of this saved file here:
     if save != 0:
+        import os
+        path = PARENT_PATH + "/data/chesmore/sim_out/rx00600/"
+        if not os.path.exists(path):
+            os.makedirs(path)
         np.savetxt(
-            "/data/chesmore/sim_out/rx00600/adj_offsets_m"
+            path 
+            + "adj_offsets_m"
             + str(mirror)
             + "_"
             + str(num)
@@ -261,14 +268,15 @@ def get_single_vert_adj_positions():
     out_m2 = []
 
     # Primary mirror adjuster positions
+
     df_m1 = pd.read_csv(
-        "/home/chesmore/Desktop/Code/holosim_paper/package/holosim-ml/pans-adjs/Mirror-M1-vertical-adjuster-points_r1-1.csv",
+        PARENT_PATH + "/pans-adjs/Mirror-M1-vertical-adjuster-points_r1-1.csv",
         skiprows=2,
         na_values=["<-- ", "--> ", "<--", "-->"],
     )
     # Secondary mirror adjuster positions
     df_m2 = pd.read_csv(
-        "/home/chesmore/Desktop/Code/holosim_paper/package/holosim-ml/pans-adjs/Mirror-M2-vertical-adjuster-points_r1-1.csv",
+        PARENT_PATH + "/pans-adjs/Mirror-M2-vertical-adjuster-points_r1-1.csv",
         skiprows=2,
         na_values=["<-- ", "--> ", "<--", "-->"],
     )
