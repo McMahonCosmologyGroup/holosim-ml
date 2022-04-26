@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Chesmore
+    given-names: Grace E.
+    orcid: https://orcid.org/0000-0002-5127-0401
+title: "The Simons Observatory HoloSim-ML: machine learning applied to the efficient analysis of radio holography measurements of complex optical systems"
+version: 2.0
+doi: 10.1364/AO.435007
+date-released: 2021-10
+url: "https://github.com/McMahonCosmologyGroup/holosim-ml"
